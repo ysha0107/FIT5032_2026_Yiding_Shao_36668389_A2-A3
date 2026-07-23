@@ -1,0 +1,170 @@
+/* ========================================
+   MindBridge Health Foundation — Global Styles
+   Calming mental health theme (blues & greens)
+   ======================================== */
+
+:root {
+  --mindbridge-primary: #2c6f8f;
+  --mindbridge-primary-dark: #1a526b;
+  --mindbridge-secondary: #4a9c7c;
+  --mindbridge-accent: #f0a04b;
+  --mindbridge-light: #f5f8fa;
+  --mindbridge-dark: #2d3436;
+  --mindbridge-text: #4a5568;
+  --mindbridge-heading: #1a365d;
+  --mindbridge-danger: #e53e3e;
+  --mindbridge-success: #38a169;
+  --mindbridge-crisis: #c53030;
+  --mindbridge-font: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --mindbridge-heading-font: 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--mindbridge-font);
+  color: var(--mindbridge-text);
+  background-color: #ffffff;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--mindbridge-heading-font);
+  color: var(--mindbridge-heading);
+  font-weight: 600;
+}
+
+a {
+  color: var(--mindbridge-primary);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+a:hover {
+  color: var(--mindbridge-primary-dark);
+}
+
+.btn-mindbridge {
+  background-color: var(--mindbridge-primary);
+  color: #fff;
+  border: none;
+  padding: 10px 24px;
+  border-radius: 8px;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+.btn-mindbridge:hover {
+  background-color: var(--mindbridge-primary-dark);
+  color: #fff;
+}
+.btn-mindbridge-outline {
+  background-color: transparent;
+  color: var(--mindbridge-primary);
+  border: 2px solid var(--mindbridge-primary);
+  padding: 8px 20px;
+  border-radius: 8px;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+.btn-mindbridge-outline:hover {
+  background-color: var(--mindbridge-primary);
+  color: #fff;
+}
+.btn-accent {
+  background-color: var(--mindbridge-accent);
+  color: #fff;
+  border: none;
+  padding: 10px 24px;
+  border-radius: 8px;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+.btn-accent:hover {
+  opacity: 0.9;
+  color: #fff;
+}
+
+.btn-crisis {
+  background-color: var(--mindbridge-crisis);
+  color: #fff;
+  border: none;
+  padding: 12px 28px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 1.05rem;
+  transition: all 0.2s;
+}
+.btn-crisis:hover {
+  background-color: #a02020;
+  color: #fff;
+}
+
+.section-title {
+  font-size: 2rem;
+  color: var(--mindbridge-heading);
+  margin-bottom: 0.5rem;
+  position: relative;
+}
+.section-subtitle {
+  font-size: 1.1rem;
+  color: var(--mindbridge-text);
+  margin-bottom: 2rem;
+}
+
+/* Mental health themed section backgrounds */
+.bg-calm {
+  background-color: var(--mindbridge-light);
+}
+.bg-primary-soft {
+  background: linear-gradient(135deg, #e8f4f8 0%, #eef7f1 100%);
+}
+
+/* Card styles */
+.card-mindbridge {
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.card-mindbridge:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* Form styles */
+.form-control:focus {
+  border-color: var(--mindbridge-primary);
+  box-shadow: 0 0 0 0.2rem rgba(44, 111, 143, 0.15);
+}
+
+/* Page section padding */
+.page-section {
+  padding: 60px 0;
+}
+
+/* Hero section gradient */
+.hero-gradient {
+  background: linear-gradient(135deg, #e8f4f8 0%, #d4efe4 50%, #fdf6e8 100%);
+}
+
+/* Validation error styles */
+.input-error {
+  border-color: var(--mindbridge-danger) !important;
+}
+.input-valid {
+  border-color: var(--mindbridge-success) !important;
+}
+.error-message {
+  color: var(--mindbridge-danger);
+  font-size: 0.85rem;
+  margin-top: 4px;
+}
+.success-message {
+  color: var(--mindbridge-success);
+  font-size: 0.85rem;
+  margin-top: 4px;
+}

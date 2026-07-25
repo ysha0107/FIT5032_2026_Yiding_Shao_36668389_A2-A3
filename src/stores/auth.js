@@ -34,11 +34,12 @@ function ensureDefaultUsers() {
   }
 }
 
-// Simple password hashing using SubtleCrypto-compatible approach
-// In browser, we use a simple hash for localStorage (not for production!)
+// Password hashing — SHA-256 would be ideal but requires async SubtleCrypto API
+// This implementation uses a salted iterative hash to avoid storing plain-text passwords
+// NOTE: This is suitable for the assignment's client-side localStorage context;
+// a production app would use bcrypt/scrypt on the server with HTTPS transport
 function hashPasswordSync(password) {
-  // For the purpose of this assignment, use a simple but effective approach
-  // This avoids storing plain-text passwords in localStorage
+  // Salted hash — prevents plain-text password storage in localStorage
   let hash = 0
   const salt = 'mindbridge_salt_2024'
   const combined = password + salt

@@ -10,7 +10,6 @@ import LoginPage from '../views/LoginPage.vue'
 import RegisterPage from '../views/RegisterPage.vue'
 import DashboardPage from '../views/DashboardPage.vue'
 import AdminDashboard from '../views/AdminDashboard.vue'
-import { useAuthStore } from '../stores/auth'
 
 const routes = [
   { path: '/', name: 'Home', component: HomePage },

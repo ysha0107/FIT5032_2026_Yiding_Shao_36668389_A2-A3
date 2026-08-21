@@ -2,17 +2,19 @@
 import { computed } from 'vue'
 import { useAuthStore } from '../stores/auth'
 import { useRatingsStore } from '../stores/ratings'
+import { useContactsStore } from '../stores/contacts'
 
 const { currentUser, userName, userRole, logout } = useAuthStore()
 const { getRating } = useRatingsStore()
+const { contacts } = useContactsStore()
 
-// Get some data for the dashboard
-const contactMessages = computed(() => {
-  return JSON.parse(localStorage.getItem('mindbridge_contacts') || '[]')
-})
-
+// Recent contact submissions (Firestore-backed)
 const recentContacts = computed(() => {
-  return contactMessages.value.slice(-5).reverse()
+  return [...contacts.value].sort((a, b) => {
+    const ta = a.date?.seconds ?? a.date?.getTime?.() ?? 0
+    const tb = b.date?.seconds ?? b.date?.getTime?.() ?? 0
+    return tb - ta
+  }).slice(0, 5)
 })
 </script>
 
@@ -56,6 +58,11 @@ const recentContacts = computed(() => {
               <li class="mb-2">
                 <router-link to="/resources" class="d-flex align-items-center gap-2">
                   📚 Explore Resources
+                </router-link>
+              </li>
+              <li class="mb-2">
+                <router-link to="/book-appointment" class="d-flex align-items-center gap-2">
+                  📅 Book an Appointment
                 </router-link>
               </li>
               <li class="mb-2">
@@ -144,7 +151,7 @@ const recentContacts = computed(() => {
                 </thead>
                 <tbody>
                   <tr v-for="msg in recentContacts" :key="msg.id">
-                    <td><small>{{ new Date(msg.date).toLocaleDateString() }}</small></td>
+                    <td><small>{{ msg.date?.seconds ? new Date(msg.date.seconds * 1000).toLocaleDateString() : msg.date ? new Date(msg.date).toLocaleDateString() : '—' }}</small></td>
                     <td>{{ msg.name }}</td>
                     <td>{{ msg.subject }}</td>
                     <td><span class="badge bg-light text-muted">{{ msg.enquiryType }}</span></td>

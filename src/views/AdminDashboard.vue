@@ -8,6 +8,7 @@ import { useRatingsStore } from '../stores/ratings'
 import { useContactsStore } from '../stores/contacts'
 import { useAppointmentsStore } from '../stores/appointments'
 import { useServicesStore } from '../stores/services'
+import { exportTablePdf } from '../utils/pdf'
 
 const { allUsers, userName, logout } = useAuthStore()
 const { ratings } = useRatingsStore()
@@ -180,7 +181,10 @@ onBeforeUnmount(() => {
       <div class="row mb-4">
         <div class="col-12">
           <div class="card card-mindbridge p-4">
-            <h5>📋 Users</h5>
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-2">
+              <h5 class="mb-0">📋 Users</h5>
+              <button type="button" class="btn btn-outline-secondary btn-sm" @click="exportTablePdf('MindBridge Users', userColumns, allUsers, 'mindbridge-users.pdf')">⬇ Export PDF</button>
+            </div>
             <DataTable
               caption="Users"
               :columns="userColumns"
@@ -211,7 +215,10 @@ onBeforeUnmount(() => {
       <div class="row mb-4">
         <div class="col-12">
           <div class="card card-mindbridge p-4">
-            <h5>🗓️ All Appointments</h5>
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-2">
+              <h5 class="mb-0">🗓️ All Appointments</h5>
+              <button type="button" class="btn btn-outline-secondary btn-sm" @click="exportTablePdf('MindBridge Appointments', appointmentColumns, appointments, 'mindbridge-appointments.pdf')">⬇ Export PDF</button>
+            </div>
             <DataTable
               caption="Appointments"
               :columns="appointmentColumns"
@@ -234,7 +241,10 @@ onBeforeUnmount(() => {
       <div class="row">
         <div class="col-12">
           <div class="card card-mindbridge p-4">
-            <h5>📬 Contact Messages</h5>
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-2">
+              <h5 class="mb-0">📬 Contact Messages</h5>
+              <button type="button" class="btn btn-outline-secondary btn-sm" @click="exportTablePdf('MindBridge Contact Messages', contactColumns, contacts, 'mindbridge-contacts.pdf')">⬇ Export PDF</button>
+            </div>
             <DataTable
               caption="Contact messages"
               :columns="contactColumns"

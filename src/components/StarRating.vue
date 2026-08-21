@@ -47,7 +47,7 @@ function starClass(index) {
 
 <template>
   <div class="star-rating">
-    <div class="stars d-inline-flex align-items-center gap-1">
+    <div class="stars d-inline-flex align-items-center gap-1" role="group" aria-label="Rate this service from 1 to 5 stars">
       <button
         v-for="star in 5"
         :key="star"
@@ -56,6 +56,7 @@ function starClass(index) {
         :class="[starClass(star), { clickable: !readOnly && isLoggedIn }]"
         :disabled="readOnly || !isLoggedIn"
         :aria-label="`Rate ${star} out of 5 stars`"
+        :aria-pressed="userRating?.score === star && !readOnly"
         @click="rate(star)"
         @mouseenter="hoverRating = star"
         @mouseleave="hoverRating = 0"

@@ -86,8 +86,11 @@ async function handleGoogleLogin() {
                   placeholder="you@example.com"
                   autocomplete="email"
                   required
+                
+                  :aria-invalid="!!emailError"
+                  :aria-describedby="emailError ? 'login-email-error' : null"
                 />
-                <div v-if="emailError" class="error-message">{{ emailError }}</div>
+                <div v-if="emailError" id="login-email-error" class="error-message">{{ emailError }}</div>
               </div>
 
               <div class="mb-3">

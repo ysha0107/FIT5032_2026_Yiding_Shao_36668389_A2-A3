@@ -4,6 +4,8 @@ import { ref } from 'vue'
 const servicesData = ref([
   {
     id: 1,
+    lat: -37.8136,
+    lng: 144.9631,
     name: 'Individual Counselling',
     category: 'therapy',
     description: 'One-on-one counselling sessions with qualified mental health professionals, available both in-person and via telehealth.',
@@ -16,6 +18,8 @@ const servicesData = ref([
   },
   {
     id: 2,
+    lat: -37.8012,
+    lng: 144.9567,
     name: 'Support Groups',
     category: 'community',
     description: 'Connect with others who understand what you are going through in a safe, facilitated group environment.',
@@ -28,6 +32,8 @@ const servicesData = ref([
   },
   {
     id: 3,
+    lat: -37.8221,
+    lng: 144.9813,
     name: 'Crisis Helpline — 24/7 Support',
     category: 'crisis',
     description: 'Immediate, confidential support available 24 hours a day, 7 days a week. You are never alone.',
@@ -40,6 +46,8 @@ const servicesData = ref([
   },
   {
     id: 4,
+    lat: -37.7666,
+    lng: 144.9744,
     name: 'Youth Mental Health Program',
     category: 'youth',
     description: 'Specialised mental health services designed for young people aged 12-25, addressing the unique challenges of adolescence and young adulthood.',
@@ -52,6 +60,8 @@ const servicesData = ref([
   },
   {
     id: 5,
+    lat: -37.8461,
+    lng: 144.9762,
     name: 'Workplace Mental Health Training',
     category: 'education',
     description: 'Comprehensive mental health training programs for organizations looking to create mentally healthy workplaces.',
@@ -64,6 +74,8 @@ const servicesData = ref([
   },
   {
     id: 6,
+    lat: -37.8163,
+    lng: 144.9338,
     name: 'Online Self-Help Toolkit',
     category: 'self-help',
     description: 'Access evidence-based self-help resources, interactive tools, and guided exercises anytime, anywhere.',

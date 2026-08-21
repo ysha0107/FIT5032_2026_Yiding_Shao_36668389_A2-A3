@@ -76,16 +76,17 @@ a:hover {
 }
 .btn-accent {
   background-color: var(--mindbridge-accent);
-  color: #fff;
+  /* dark text on amber passes WCAG AA contrast (white on amber fails at ~2.2:1) */
+  color: #3a2a12;
   border: none;
   padding: 10px 24px;
   border-radius: 8px;
-  font-weight: 500;
+  font-weight: 600;
   transition: all 0.2s;
 }
 .btn-accent:hover {
   opacity: 0.9;
-  color: #fff;
+  color: #3a2a12;
 }
 
 .btn-crisis {
@@ -162,6 +163,25 @@ a:hover {
 }
 .data-table-sort:hover { color: var(--mindbridge-primary); }
 .data-table th .form-control-sm { min-width: 110px; font-weight: 400; }
+
+/* Accessibility (E.3) — skip link + focus visibility */
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 3000;
+  background: #fff;
+  color: var(--mindbridge-heading);
+  padding: 0.6rem 1.2rem;
+  border: 2px solid var(--mindbridge-primary);
+  border-radius: 0 0 8px 0;
+  font-weight: 600;
+}
+.skip-link:focus { left: 0; top: 0; }
+:focus-visible {
+  outline: 3px solid var(--mindbridge-primary);
+  outline-offset: 2px;
+}
 
 /* Validation error styles */
 .input-error {

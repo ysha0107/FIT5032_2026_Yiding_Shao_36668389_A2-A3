@@ -32,12 +32,13 @@ function handleLogout() {
         type="button"
         @click="toggleMenu"
         :aria-expanded="isMenuOpen"
+        aria-controls="mindbridge-nav"
         aria-label="Toggle navigation"
       >
         <span class="navbar-toggler-icon"></span>
       </button>
 
-      <div class="collapse navbar-collapse" :class="{ show: isMenuOpen }">
+      <div id="mindbridge-nav" class="collapse navbar-collapse" :class="{ show: isMenuOpen }">
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
           <li class="nav-item">
             <router-link to="/" class="nav-link" @click="closeMenu">Home</router-link>
@@ -57,10 +58,16 @@ function handleLogout() {
           <li class="nav-item">
             <router-link to="/contact" class="nav-link" @click="closeMenu">Contact</router-link>
           </li>
+          <li class="nav-item">
+            <router-link to="/locations" class="nav-link" @click="closeMenu">Locations</router-link>
+          </li>
         </ul>
 
         <div class="d-flex align-items-center gap-2">
           <template v-if="isLoggedIn">
+            <router-link to="/book-appointment" class="btn btn-outline-secondary btn-sm" @click="closeMenu">
+              Book Appointment
+            </router-link>
             <router-link to="/dashboard" class="btn btn-mindbridge-outline btn-sm" @click="closeMenu">
               Dashboard
             </router-link>

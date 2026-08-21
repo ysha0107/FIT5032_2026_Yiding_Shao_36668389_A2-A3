@@ -1,5 +1,11 @@
 <script setup>
 import { ref, reactive, computed } from 'vue'
+import emailjs from '@emailjs/browser'
+import { useContactsStore } from '../stores/contacts'
+
+const SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID
+const TEMPLATE_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID
+const PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY
 
 // Contact form state with validations — BR B.1
 const form = reactive({
@@ -14,6 +20,8 @@ const submitted = ref(false)
 const isLoading = ref(false)
 const submitSuccess = ref(false)
 const submitError = ref('')
+const attachment = ref(null)
+const attachmentError = ref('')
 
 // Validation Type 1: Required fields + Email format
 const nameError = computed(() => {
@@ -61,7 +69,17 @@ function sanitizeInput(input) {
   return input.replace(/<[^>]*>/g, '').trim()
 }
 
-function handleSubmit() {
+function handleFileChange(event) {
+  attachment.value = event.target.files[0] || null
+  attachmentError.value = ''
+  if (attachment.value && attachment.value.size > 1024 * 1024) {
+    attachmentError.value = 'Attachment must be 1 MB or smaller.'
+    attachment.value = null
+    event.target.value = ''
+  }
+}
+
+async function handleSubmit() {
   submitted.value = true
   submitError.value = ''
   submitSuccess.value = false
@@ -70,38 +88,65 @@ function handleSubmit() {
     submitError.value = 'Please correct the errors below before submitting.'
     return
   }
+  if (attachmentError.value) {
+    submitError.value = 'Please fix the attachment error before submitting.'
+    return
+  }
 
   isLoading.value = true
 
-  // Simulate form submission — store in localStorage
-  setTimeout(() => {
-    const contactMessages = JSON.parse(localStorage.getItem('mindbridge_contacts') || '[]')
-    contactMessages.push({
-      id: Date.now(),
-      name: sanitizeInput(form.name),
-      email: sanitizeInput(form.email),
-      subject: sanitizeInput(form.subject),
-      message: sanitizeInput(form.message),
-      enquiryType: form.enquiryType,
-      date: new Date().toISOString()
-    })
-    localStorage.setItem('mindbridge_contacts', JSON.stringify(contactMessages))
+  const contactPayload = {
+    name: sanitizeInput(form.name),
+    email: sanitizeInput(form.email),
+    subject: sanitizeInput(form.subject),
+    message: sanitizeInput(form.message),
+    enquiryType: form.enquiryType,
+    attachmentName: attachment.value?.name || '',
+    attachmentSize: attachment.value?.size || 0
+  }
 
-    isLoading.value = false
+  const saved = await useContactsStore().submitContact(contactPayload)
+
+  // D.2: send the email with attachment via EmailJS (best-effort; the message
+  // is stored in Firestore either way)
+  if (!saved.queued && SERVICE_ID && TEMPLATE_ID && PUBLIC_KEY) {
+    try {
+      await emailjs.send(
+        SERVICE_ID,
+        TEMPLATE_ID,
+        {
+          from_name: contactPayload.name,
+          from_email: contactPayload.email,
+          subject: contactPayload.subject,
+          message: contactPayload.message,
+          enquiry_type: contactPayload.enquiryType,
+          ...(attachment.value ? { attachment_file: attachment.value } : {})
+        },
+        { publicKey: PUBLIC_KEY }
+      )
+    } catch (e) {
+      console.error('EmailJS send failed', e)
+    }
+  }
+
+  isLoading.value = false
+  submitted.value = false
+  if (saved.success) {
     submitSuccess.value = true
-    submitted.value = false
-
-    // Reset form
     form.name = ''
     form.email = ''
     form.subject = ''
     form.message = ''
     form.enquiryType = 'general'
-
+    attachment.value = null
+    const fileInput = document.getElementById('contact-attachment')
+    if (fileInput) fileInput.value = ''
     setTimeout(() => {
       submitSuccess.value = false
-    }, 5000)
-  }, 800)
+    }, 6000)
+  } else {
+    submitError.value = saved.error || 'Something went wrong. Please try again.'
+  }
 }
 </script>
 
@@ -161,8 +206,11 @@ function handleSubmit() {
                     placeholder="John Doe"
                     autocomplete="name"
                     required
-                  />
-                  <div v-if="nameError" class="error-message">{{ nameError }}</div>
+                  
+                  :aria-invalid="!!nameError"
+                  :aria-describedby="nameError ? 'contact-name-error' : null"
+                />
+                  <div v-if="nameError" id="contact-name-error" class="error-message">{{ nameError }}</div>
                 </div>
 
                 <!-- Email -->
@@ -177,8 +225,11 @@ function handleSubmit() {
                     placeholder="you@example.com"
                     autocomplete="email"
                     required
-                  />
-                  <div v-if="emailError" class="error-message">{{ emailError }}</div>
+                  
+                  :aria-invalid="!!emailError"
+                  :aria-describedby="emailError ? 'contact-email-error' : null"
+                />
+                  <div v-if="emailError" id="contact-email-error" class="error-message">{{ emailError }}</div>
                 </div>
 
                 <!-- Subject -->
@@ -192,8 +243,11 @@ function handleSubmit() {
                     :class="{ 'input-error': subjectError, 'input-valid': form.subject && !subjectError }"
                     placeholder="What is this about?"
                     required
-                  />
-                  <div v-if="subjectError" class="error-message">{{ subjectError }}</div>
+                  
+                  :aria-invalid="!!subjectError"
+                  :aria-describedby="subjectError ? 'contact-subject-error' : null"
+                />
+                  <div v-if="subjectError" id="contact-subject-error" class="error-message">{{ subjectError }}</div>
                 </div>
 
                 <!-- Message -->
@@ -207,9 +261,25 @@ function handleSubmit() {
                     rows="5"
                     placeholder="Tell us how we can help (minimum 10 characters)..."
                     required
+                    :aria-invalid="!!messageError"
+                    :aria-describedby="messageError ? 'contact-message-error' : null"
                   ></textarea>
-                  <div v-if="messageError" class="error-message">{{ messageError }}</div>
+                  <div v-if="messageError" id="contact-message-error" class="error-message">{{ messageError }}</div>
                   <small class="text-muted">{{ form.message.length }}/2000 characters</small>
+                </div>
+
+                <!-- Attachment (D.2) -->
+                <div class="mb-3">
+                  <label for="contact-attachment" class="form-label">Attachment <small class="text-muted">(optional, max 1 MB)</small></label>
+                  <input
+                    id="contact-attachment"
+                    type="file"
+                    class="form-control"
+                    accept=".pdf,.doc,.docx,.png,.jpg,.jpeg,.txt"
+                    @change="handleFileChange"
+                  />
+                  <div v-if="attachmentError" class="error-message">{{ attachmentError }}</div>
+                  <small v-if="attachment" class="text-muted">📎 {{ attachment.name }} ({{ Math.round(attachment.size / 1024) }} KB)</small>
                 </div>
 
                 <button
@@ -248,11 +318,9 @@ function handleSubmit() {
             <div class="card card-mindbridge p-4">
               <h5>🗺️ Find a Centre Near You</h5>
               <p class="text-muted small mt-2">We have locations across Australia. Use our interactive map to find the nearest MindBridge centre.</p>
-              <div class="map-placeholder p-4 text-center rounded bg-light">
-                <span style="font-size: 3rem;">🗺️</span>
-                <p class="text-muted mb-0 mt-2">Interactive Map</p>
-                <small class="text-muted">(Map feature coming in Phase 2)</small>
-              </div>
+              <router-link to="/locations" class="btn btn-mindbridge-outline w-100 mt-2">
+                🗺️ Open Interactive Map
+              </router-link>
             </div>
           </div>
         </div>

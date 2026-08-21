@@ -120,8 +120,11 @@ async function handleRegister() {
                   placeholder="Your full name"
                   autocomplete="name"
                   required
+                
+                  :aria-invalid="!!nameError"
+                  :aria-describedby="nameError ? 'reg-name-error' : null"
                 />
-                <div v-if="nameError" class="error-message">{{ nameError }}</div>
+                <div v-if="nameError" id="reg-name-error" class="error-message">{{ nameError }}</div>
               </div>
 
               <!-- Email -->
@@ -136,8 +139,11 @@ async function handleRegister() {
                   placeholder="you@example.com"
                   autocomplete="email"
                   required
+                
+                  :aria-invalid="!!emailError"
+                  :aria-describedby="emailError ? 'reg-email-error' : null"
                 />
-                <div v-if="emailError" class="error-message">{{ emailError }}</div>
+                <div v-if="emailError" id="reg-email-error" class="error-message">{{ emailError }}</div>
               </div>
 
               <!-- Password -->
@@ -152,8 +158,11 @@ async function handleRegister() {
                   placeholder="Create a strong password"
                   autocomplete="new-password"
                   required
+                
+                  :aria-invalid="!!passwordError"
+                  :aria-describedby="passwordError ? 'reg-password-error' : null"
                 />
-                <div v-if="passwordError" class="error-message">{{ passwordError }}</div>
+                <div v-if="passwordError" id="reg-password-error" class="error-message">{{ passwordError }}</div>
                 <div v-else-if="form.password && !passwordError" class="success-message">Password strength: Good ✓</div>
                 <small class="text-muted">Min 8 characters, 1 uppercase, 1 number, 1 special character.</small>
               </div>
@@ -170,8 +179,11 @@ async function handleRegister() {
                   placeholder="Repeat your password"
                   autocomplete="new-password"
                   required
+                
+                  :aria-invalid="!!confirmError"
+                  :aria-describedby="confirmError ? 'reg-confirm-error' : null"
                 />
-                <div v-if="confirmError" class="error-message">{{ confirmError }}</div>
+                <div v-if="confirmError" id="reg-confirm-error" class="error-message">{{ confirmError }}</div>
                 <div v-else-if="form.confirmPassword && !confirmError" class="success-message">Passwords match ✓</div>
               </div>
 

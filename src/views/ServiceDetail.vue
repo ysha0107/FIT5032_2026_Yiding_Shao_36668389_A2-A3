@@ -45,7 +45,7 @@ function onRated(data) {
             </div>
 
             <!-- Features -->
-            <h4 class="mt-4">What's Included</h4>
+            <h2 class="mt-4 fs-5">What's Included</h2>
             <ul class="list-unstyled">
               <li v-for="feature in service.features" :key="feature" class="mb-2">
                 ✅ {{ feature }}
@@ -55,7 +55,7 @@ function onRated(data) {
 
           <div class="col-lg-4">
             <div class="card card-mindbridge p-4 sticky-sidebar">
-              <h3 class="fs-5">Service Details</h3>
+              <h2 class="fs-5">Service Details</h2>
               <hr>
               <div class="mb-3">
                 <strong>💰 Pricing:</strong>
@@ -73,7 +73,7 @@ function onRated(data) {
 
               <!-- Rating Section -->
               <div class="mb-3">
-                <h6>Rate This Service</h6>
+                <h3 class="fs-6">Rate This Service</h3>
                 <StarRating :itemId="service.id" @rated="onRated" />
                 <div v-if="ratingMessage" class="alert alert-success mt-2 py-2 small mb-0">
                   {{ ratingMessage }}

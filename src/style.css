@@ -164,6 +164,12 @@ a:hover {
 .data-table-sort:hover { color: var(--mindbridge-primary); }
 .data-table th .form-control-sm { min-width: 110px; font-weight: 400; }
 
+/* Accessibility (E.3) — Bootstrap's text-primary (#0d6efd) fails AA contrast on
+   soft-blue badges (3.94:1); use the darker brand primary instead (≈5:1) */
+.text-primary {
+  color: var(--mindbridge-primary) !important;
+}
+
 /* Accessibility (E.3) — skip link + focus visibility */
 .skip-link {
   position: absolute;

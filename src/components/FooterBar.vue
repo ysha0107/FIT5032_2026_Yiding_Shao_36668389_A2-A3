@@ -22,7 +22,7 @@
         </div>
 
         <div class="col-lg-2 col-md-6">
-          <h6 class="footer-heading">Quick Links</h6>
+          <h4 class="footer-heading fs-6">Quick Links</h4>
           <ul class="list-unstyled">
             <li><router-link to="/" class="footer-link">Home</router-link></li>
             <li><router-link to="/about" class="footer-link">About Us</router-link></li>
@@ -32,7 +32,7 @@
         </div>
 
         <div class="col-lg-2 col-md-6">
-          <h6 class="footer-heading">Get Help</h6>
+          <h4 class="footer-heading fs-6">Get Help</h4>
           <ul class="list-unstyled">
             <li><router-link to="/contact" class="footer-link">Contact Us</router-link></li>
             <li><a href="#" class="footer-link">Crisis Helpline</a></li>
@@ -42,7 +42,7 @@
         </div>
 
         <div class="col-lg-4 col-md-6">
-          <h6 class="footer-heading">Stay Connected</h6>
+          <h4 class="footer-heading fs-6">Stay Connected</h4>
           <p class="footer-text mb-2">Subscribe to our newsletter for mental health resources and updates.</p>
           <div class="input-group mb-2">
             <input type="email" class="form-control" placeholder="Your email" aria-label="Email for newsletter">

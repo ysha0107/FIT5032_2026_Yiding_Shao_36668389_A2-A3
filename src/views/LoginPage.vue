@@ -5,7 +5,7 @@ import { useAuthStore } from '../stores/auth'
 
 const router = useRouter()
 const route = useRoute()
-const { login } = useAuthStore()
+const { login, loginWithGoogle } = useAuthStore()
 
 const email = ref('')
 const password = ref('')
@@ -23,7 +23,7 @@ const isFormValid = computed(() => {
   return email.value.trim() && password.value && !emailError.value
 })
 
-function handleLogin() {
+async function handleLogin() {
   errorMessage.value = ''
 
   if (!isFormValid.value) {
@@ -32,18 +32,27 @@ function handleLogin() {
   }
 
   isLoading.value = true
-  const result = login(email.value, password.value)
+  const result = await login(email.value, password.value)
+  isLoading.value = false
+  if (result.success) {
+    const redirect = route.query.redirect || '/dashboard'
+    router.push(redirect)
+  } else {
+    errorMessage.value = result.error
+  }
+}
 
-  // Small delay to avoid flash
-  setTimeout(() => {
-    isLoading.value = false
-    if (result.success) {
-      const redirect = route.query.redirect || '/dashboard'
-      router.push(redirect)
-    } else {
-      errorMessage.value = result.error
-    }
-  }, 300)
+async function handleGoogleLogin() {
+  errorMessage.value = ''
+  isLoading.value = true
+  const result = await loginWithGoogle()
+  isLoading.value = false
+  if (result.success) {
+    const redirect = route.query.redirect || '/dashboard'
+    router.push(redirect)
+  } else {
+    errorMessage.value = result.error
+  }
 }
 </script>
 
@@ -101,6 +110,20 @@ function handleLogin() {
               >
                 <span v-if="isLoading" class="spinner-border spinner-border-sm me-2"></span>
                 Sign In
+              </button>
+
+              <div class="text-center my-3">
+                <span class="text-muted small">or</span>
+              </div>
+
+              <button
+                type="button"
+                class="btn btn-light border w-100"
+                :disabled="isLoading"
+                @click="handleGoogleLogin"
+              >
+                <span aria-hidden="true" class="me-2">🔵</span>
+                Sign in with Google
               </button>
             </form>
 

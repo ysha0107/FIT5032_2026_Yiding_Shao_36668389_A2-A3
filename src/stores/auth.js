@@ -1,154 +1,174 @@
 import { ref, computed } from 'vue'
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  signOut,
+  onAuthStateChanged,
+  GoogleAuthProvider,
+  signInWithPopup,
+  updateProfile
+} from 'firebase/auth'
+import { doc, getDoc, setDoc, serverTimestamp, collection, onSnapshot } from 'firebase/firestore'
+import { auth, db } from '../firebase'
 
-// Auth store using localStorage for persistence
-const STORAGE_KEY = 'mindbridge_users'
-const CURRENT_USER_KEY = 'mindbridge_current_user'
+// ---------- reactive state ----------
+const currentUser = ref(null)          // { uid, name, email, role } | null
+const allUsers = ref([])               // Firestore users collection (admin-only pages)
+let authReadyResolve
+// Resolved after the FIRST onAuthStateChanged callback (profile fetched).
+// main.js awaits this before mounting so the router guard is synchronous.
+export const authReady = new Promise((resolve) => { authReadyResolve = resolve })
 
-// Reactive state
-const currentUser = ref(JSON.parse(localStorage.getItem(CURRENT_USER_KEY) || 'null'))
-const users = ref(JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'))
+let usersUnsub = null
 
-// Ensure there's at least one admin user for testing
-function ensureDefaultUsers() {
-  if (users.value.length === 0) {
-    const defaultUsers = [
-      {
-        id: 1,
-        name: 'Admin User',
-        email: 'admin@mindbridge.org',
-        password: hashPasswordSync('Admin@123'),
-        role: 'admin',
-        createdAt: new Date().toISOString()
-      },
-      {
-        id: 2,
-        name: 'Sarah Client',
-        email: 'sarah@example.com',
-        password: hashPasswordSync('Sarah@123'),
-        role: 'client',
-        createdAt: new Date().toISOString()
+// ---------- profile helpers ----------
+// On first login the profile is created with role 'client'. An existing doc
+// (e.g. the console-created admin) keeps its role untouched.
+async function fetchOrCreateProfile(user) {
+  const userRef = doc(db, 'users', user.uid)
+  const snap = await getDoc(userRef)
+  if (snap.exists()) {
+    const data = snap.data()
+    if (!data.name && user.displayName) {
+      await setDoc(userRef, { name: user.displayName, email: user.email }, { merge: true })
+      data.name = user.displayName
+    }
+    return data
+  }
+  const profile = {
+    name: user.displayName || '',
+    email: user.email || '',
+    role: 'client',
+    createdAt: serverTimestamp()
+  }
+  await setDoc(userRef, profile)
+  return profile
+}
+
+// ---------- auth state listener ----------
+onAuthStateChanged(auth, async (firebaseUser) => {
+  if (firebaseUser) {
+    try {
+      const profile = await fetchOrCreateProfile(firebaseUser)
+      currentUser.value = {
+        uid: firebaseUser.uid,
+        name: profile.name || firebaseUser.displayName || '',
+        email: firebaseUser.email,
+        role: profile.role || 'client'
       }
-    ]
-    users.value = defaultUsers
-    saveUsers()
-  }
-}
-
-// Password hashing — SHA-256 would be ideal but requires async SubtleCrypto API
-// This implementation uses a salted iterative hash to avoid storing plain-text passwords
-// NOTE: This is suitable for the assignment's client-side localStorage context;
-// a production app would use bcrypt/scrypt on the server with HTTPS transport
-function hashPasswordSync(password) {
-  // Salted hash — prevents plain-text password storage in localStorage
-  let hash = 0
-  const salt = 'mindbridge_salt_2024'
-  const combined = password + salt
-  for (let i = 0; i < combined.length; i++) {
-    const char = combined.charCodeAt(i)
-    hash = ((hash << 5) - hash) + char
-    hash |= 0
-  }
-  return 'mb_' + Math.abs(hash).toString(36) + '_' + btoa(password).substring(0, 8)
-}
-
-function verifyPassword(password, hash) {
-  return hashPasswordSync(password) === hash
-}
-
-function saveUsers() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(users.value))
-}
-
-function saveCurrentUser() {
-  if (currentUser.value) {
-    localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(currentUser.value))
+      // Start the users snapshot only while signed in (rules require auth;
+      // avoids permission errors on public pages for logged-out visitors)
+      if (!usersUnsub) {
+        usersUnsub = onSnapshot(collection(db, 'users'), (snap) => {
+          allUsers.value = snap.docs.map((d) => ({ uid: d.id, ...d.data() }))
+        }, () => {})
+      }
+    } catch (e) {
+      // Firestore unreachable (e.g. VPN off) — clear session so UI shows login
+      console.error('Profile load failed:', e)
+      currentUser.value = null
+    }
   } else {
-    localStorage.removeItem(CURRENT_USER_KEY)
+    currentUser.value = null
+    if (usersUnsub) { usersUnsub(); usersUnsub = null }
+    allUsers.value = []
+  }
+  authReadyResolve()
+})
+
+// ---------- error mapping ----------
+function mapAuthError(code) {
+  switch (code) {
+    case 'auth/invalid-credential':
+    case 'auth/wrong-password':
+      return 'Incorrect email or password. Please try again.'
+    case 'auth/user-not-found':
+      return 'No account found with this email address.'
+    case 'auth/email-already-in-use':
+      return 'An account with this email already exists.'
+    case 'auth/weak-password':
+      return 'Password is too weak. Use at least 8 characters.'
+    case 'auth/invalid-email':
+      return 'Please enter a valid email address.'
+    case 'auth/too-many-requests':
+      return 'Too many attempts. Please wait a moment and try again.'
+    case 'auth/popup-closed-by-user':
+      return 'Google sign-in was cancelled.'
+    case 'auth/popup-blocked':
+      return 'The Google sign-in popup was blocked by your browser. Please allow popups.'
+    case 'auth/account-exists-with-different-credential':
+      return 'An account already exists with this email. Please sign in with email and password.'
+    case 'auth/network-request-failed':
+      return 'Network error — check your internet/VPN connection and try again.'
+    default:
+      return 'Authentication failed. Please try again.'
   }
 }
 
-// Initialize
-ensureDefaultUsers()
+// XSS prevention: strip HTML tags from input (kept from A2, BR C.4)
+function sanitizeInput(input) {
+  if (!input) return ''
+  return input.replace(/<[^>]*>/g, '').trim()
+}
 
-// Composable
+// ---------- composable ----------
 export function useAuthStore() {
   const isLoggedIn = computed(() => currentUser.value !== null)
   const userRole = computed(() => currentUser.value?.role || null)
   const userName = computed(() => currentUser.value?.name || null)
 
-  function register(name, email, password, role = 'client') {
-    // Check if email already exists
-    if (users.value.find(u => u.email.toLowerCase() === email.toLowerCase())) {
-      return { success: false, error: 'An account with this email already exists.' }
+  async function register(name, email, password, role = 'client') {
+    try {
+      if (role !== 'client' && role !== 'volunteer' && role !== 'professional') role = 'client'
+      const cred = await createUserWithEmailAndPassword(auth, email.trim().toLowerCase(), password)
+      await updateProfile(cred.user, { displayName: sanitizeInput(name) })
+      // Full overwrite: guarantees the profile role matches the register form even
+      // if the auth-state listener already created a default 'client' doc first.
+      await setDoc(doc(db, 'users', cred.user.uid), {
+        name: sanitizeInput(name),
+        email: email.trim().toLowerCase(),
+        role,
+        createdAt: serverTimestamp()
+      })
+      currentUser.value = { uid: cred.user.uid, name: sanitizeInput(name), email: cred.user.email, role }
+      return { success: true }
+    } catch (e) {
+      return { success: false, error: mapAuthError(e.code) }
     }
+  }
 
-    const newUser = {
-      id: users.value.length > 0 ? Math.max(...users.value.map(u => u.id)) + 1 : 1,
-      name: sanitizeInput(name),
-      email: sanitizeInput(email.toLowerCase().trim()),
-      password: hashPasswordSync(password),
-      role: role,
-      createdAt: new Date().toISOString()
+  async function login(email, password) {
+    try {
+      await signInWithEmailAndPassword(auth, email.trim().toLowerCase(), password)
+      return { success: true }
+    } catch (e) {
+      return { success: false, error: mapAuthError(e.code) }
     }
-
-    users.value.push(newUser)
-    saveUsers()
-    return { success: true }
   }
 
-  function login(email, password) {
-    const user = users.value.find(u => u.email.toLowerCase() === email.toLowerCase().trim())
-    if (!user) {
-      return { success: false, error: 'No account found with this email address.' }
+  async function loginWithGoogle() {
+    try {
+      await signInWithPopup(auth, new GoogleAuthProvider())
+      return { success: true }
+    } catch (e) {
+      return { success: false, error: mapAuthError(e.code) }
     }
-    if (!verifyPassword(password, user.password)) {
-      return { success: false, error: 'Incorrect password. Please try again.' }
-    }
-
-    // Store user info WITHOUT password
-    const { password: _, ...safeUser } = user
-    currentUser.value = safeUser
-    saveCurrentUser()
-    return { success: true }
   }
 
-  function logout() {
-    currentUser.value = null
-    saveCurrentUser()
-  }
-
-  function getAllUsers() {
-    return users.value.map(({ password: _, ...rest }) => rest)
-  }
-
-  function getUserCount() {
-    return users.value.length
-  }
-
-  function getUserCountByRole() {
-    const counts = {}
-    users.value.forEach(u => {
-      counts[u.role] = (counts[u.role] || 0) + 1
-    })
-    return counts
-  }
-
-  // XSS prevention: strip HTML tags from input
-  function sanitizeInput(input) {
-    if (!input) return ''
-    return input.replace(/<[^>]*>/g, '').trim()
+  async function logout() {
+    await signOut(auth)
   }
 
   return {
     currentUser,
+    allUsers,
+    authReady,
     isLoggedIn,
     userRole,
     userName,
     register,
     login,
-    logout,
-    getAllUsers,
-    getUserCount,
-    getUserCountByRole
+    loginWithGoogle,
+    logout
   }
 }

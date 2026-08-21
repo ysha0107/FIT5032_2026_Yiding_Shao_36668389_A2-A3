@@ -60,7 +60,7 @@ const isFormValid = computed(() => {
          form.password === form.confirmPassword
 })
 
-function handleRegister() {
+async function handleRegister() {
   submitted.value = true
   errorMessage.value = ''
   successMessage.value = ''
@@ -71,19 +71,16 @@ function handleRegister() {
   }
 
   isLoading.value = true
-  const result = register(form.name, form.email, form.password, form.role)
-
-  setTimeout(() => {
-    isLoading.value = false
-    if (result.success) {
-      successMessage.value = 'Account created successfully! Redirecting to login...'
-      setTimeout(() => {
-        router.push('/login')
-      }, 1500)
-    } else {
-      errorMessage.value = result.error
-    }
-  }, 300)
+  const result = await register(form.name, form.email, form.password, form.role)
+  isLoading.value = false
+  if (result.success) {
+    successMessage.value = 'Account created successfully! Redirecting to your dashboard...'
+    setTimeout(() => {
+      router.push('/dashboard')
+    }, 1500)
+  } else {
+    errorMessage.value = result.error
+  }
 }
 </script>
 

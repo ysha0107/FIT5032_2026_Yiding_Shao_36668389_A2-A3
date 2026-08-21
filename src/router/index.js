@@ -10,6 +10,9 @@ import LoginPage from '../views/LoginPage.vue'
 import RegisterPage from '../views/RegisterPage.vue'
 import DashboardPage from '../views/DashboardPage.vue'
 import AdminDashboard from '../views/AdminDashboard.vue'
+import LocationsPage from '../views/LocationsPage.vue'
+import AppointmentPage from '../views/AppointmentPage.vue'
+import { useAuthStore } from '../stores/auth'
 
 const routes = [
   { path: '/', name: 'Home', component: HomePage },
@@ -19,6 +22,8 @@ const routes = [
   { path: '/services/:id', name: 'ServiceDetail', component: ServiceDetail, meta: { requiresAuth: true } },
   { path: '/get-involved', name: 'GetInvolved', component: GetInvolvedPage },
   { path: '/contact', name: 'Contact', component: ContactPage },
+  { path: '/locations', name: 'Locations', component: LocationsPage },
+  { path: '/book-appointment', name: 'Appointment', component: AppointmentPage, meta: { requiresAuth: true } },
   { path: '/login', name: 'Login', component: LoginPage, meta: { guestOnly: true } },
   { path: '/register', name: 'Register', component: RegisterPage, meta: { guestOnly: true } },
   { path: '/dashboard', name: 'Dashboard', component: DashboardPage, meta: { requiresAuth: true } },
@@ -35,9 +40,9 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
-  // useAuthStore needs to be called inside the guard function
-  // because the store relies on reactive state initialized after app mount
-  const authData = JSON.parse(localStorage.getItem('mindbridge_current_user') || 'null')
+  // Safe to read the store here: main.js awaits authReady before app.mount()
+  const { currentUser } = useAuthStore()
+  const authData = currentUser.value
 
   // Routes that require authentication
   if (to.meta.requiresAuth) {

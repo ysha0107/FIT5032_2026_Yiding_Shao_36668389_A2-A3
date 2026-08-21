@@ -53,7 +53,7 @@ MindBridge Health Foundation is a web application for a mental health charity th
 | BR | Requirement | Implementation |
 |----|------------|---------------|
 | **D.1** | External authentication | Firebase Auth (email/password + Google popup). Profiles (name, role) in Firestore; router guards await the first auth-state callback before mounting |
-| **D.2** | Email with attachment | Contact form attaches a file (≤1 MB) → `POST /api/email` on the Cloudflare Worker → Resend delivers it to the charity inbox. Firestore stores the message either way |
+| **D.2** | Email with attachment | Contact form attaches a file (≤1 MB) → `POST /api/email` on the Cloudflare Worker → Resend delivers it to the charity inbox; an EmailJS fallback (without attachment) keeps the contact email working when the Resend key is not configured. Firestore stores the message either way |
 | **D.3** | Interactive table data (≥2 tables) | Reusable `DataTable.vue`: per-column search, column sorting, 10 rows/page. Used for Users, Contact Messages and Appointments tables |
 | **D.4** | Cloud deployment | Cloudflare Pages (`wrangler pages deploy dist`), `_redirects` SPA fallback |
 | **E.1** | Serverless functions | Self-designed Cloudflare Worker: `GET /api/resources`, `GET /api/resources/:id` (public REST API), `POST /api/appointments` (server-side business-hours + conflict validation stored in KV), `POST /api/email` (attachment email via Resend) |

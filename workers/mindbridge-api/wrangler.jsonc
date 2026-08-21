@@ -3,6 +3,9 @@
   "name": "mindbridge-api",
   "main": "src/index.js",
   "compatibility_date": "2026-08-10",
+  "vars": {
+    "ADMIN_EMAIL": "yshao0107@student.monash.edu"
+  },
   "kv_namespaces": [
     { "binding": "MINDBRIDGE_KV", "id": "a42d58c507d54bc7bad6273a628e9f69" }
   ]

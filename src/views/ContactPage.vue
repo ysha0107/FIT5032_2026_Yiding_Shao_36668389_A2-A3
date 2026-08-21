@@ -1,11 +1,8 @@
 <script setup>
 import { ref, reactive, computed } from 'vue'
-import emailjs from '@emailjs/browser'
 import { useContactsStore } from '../stores/contacts'
 
-const SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID
-const TEMPLATE_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID
-const PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY
+const WORKER_URL = import.meta.env.VITE_WORKER_URL
 
 // Contact form state with validations — BR B.1
 const form = reactive({
@@ -79,6 +76,15 @@ function handleFileChange(event) {
   }
 }
 
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = () => resolve(String(reader.result).split(',')[1])
+    reader.onerror = reject
+    reader.readAsDataURL(file)
+  })
+}
+
 async function handleSubmit() {
   submitted.value = true
   submitError.value = ''
@@ -107,25 +113,29 @@ async function handleSubmit() {
 
   const saved = await useContactsStore().submitContact(contactPayload)
 
-  // D.2: send the email with attachment via EmailJS (best-effort; the message
-  // is stored in Firestore either way)
-  if (!saved.queued && SERVICE_ID && TEMPLATE_ID && PUBLIC_KEY) {
+  // D.2: send the email with attachment through our Cloudflare Worker
+  // (serverless function → Resend API). Best-effort: the message is stored in
+  // Firestore either way.
+  if (!saved.queued && WORKER_URL) {
     try {
-      await emailjs.send(
-        SERVICE_ID,
-        TEMPLATE_ID,
-        {
-          from_name: contactPayload.name,
-          from_email: contactPayload.email,
+      const attachmentPayload = attachment.value
+        ? { filename: attachment.value.name, contentBase64: await fileToBase64(attachment.value) }
+        : null
+      const res = await fetch(`${WORKER_URL}/api/email`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          to: 'yshao0107@student.monash.edu',
+          fromName: contactPayload.name,
+          fromEmail: contactPayload.email,
           subject: contactPayload.subject,
-          message: contactPayload.message,
-          enquiry_type: contactPayload.enquiryType,
-          ...(attachment.value ? { attachment_file: attachment.value } : {})
-        },
-        { publicKey: PUBLIC_KEY }
-      )
+          text: `Enquiry type: ${contactPayload.enquiryType}\nFrom: ${contactPayload.name} (${contactPayload.email})\n\n${contactPayload.message}`,
+          attachment: attachmentPayload
+        })
+      })
+      if (!res.ok) console.error('Email worker send failed:', res.status)
     } catch (e) {
-      console.error('EmailJS send failed', e)
+      console.error('Email worker send failed', e)
     }
   }
 

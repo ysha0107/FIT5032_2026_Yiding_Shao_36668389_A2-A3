@@ -98,6 +98,39 @@ export default {
       return json({ appointments: await getAllAppointments(env) })
     }
 
+    // POST /api/email — server-side email with attachment via Resend (D.2).
+    // The API key lives in a Worker secret; only the charity inbox may receive,
+    // which prevents open-relay abuse of the free quota.
+    if (url.pathname === '/api/email' && request.method === 'POST') {
+      let p
+      try { p = await request.json() } catch { return json({ error: 'Invalid JSON body' }, 400) }
+      if (!p.to || !p.subject || !p.text) return json({ error: 'Missing required fields (to, subject, text).' }, 400)
+      if (p.to !== env.ADMIN_EMAIL) return json({ error: 'Recipient not allowed.' }, 403)
+      if (!env.RESEND_API_KEY) return json({ error: 'Email service not configured.' }, 503)
+
+      const payload = {
+        from: 'MindBridge Health Foundation <onboarding@resend.dev>',
+        to: [p.to],
+        subject: `[MindBridge] ${p.subject}`.slice(0, 120),
+        text: p.text.slice(0, 10000),
+        ...(p.fromEmail ? { reply_to: p.fromEmail } : {})
+      }
+      if (p.attachment && p.attachment.contentBase64) {
+        payload.attachments = [{
+          filename: String(p.attachment.filename || 'attachment.txt').slice(0, 200),
+          content: p.attachment.contentBase64
+        }]
+      }
+      const res = await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${env.RESEND_API_KEY}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      })
+      const data = await res.json().catch(() => ({}))
+      if (res.ok) return json({ ok: true, id: data.id }, 200)
+      return json({ error: data.message || 'Email send failed' }, 502)
+    }
+
     return json({ error: 'Not found' }, 404)
   }
 }

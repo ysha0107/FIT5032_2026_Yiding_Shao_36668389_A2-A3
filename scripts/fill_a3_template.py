@@ -128,7 +128,7 @@ def fill():
         if key is None:
             continue
         col = SELF_EVAL[key]
-        set_cell(ev.rows[ri].cells[col], TICK + ' (filled by script — please review)')
+        set_cell(ev.rows[ri].cells[col], TICK)
 
     # 4. Video link table
     set_cell(doc.tables[2].rows[0].cells[0],

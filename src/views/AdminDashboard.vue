@@ -159,19 +159,19 @@ onBeforeUnmount(() => {
       <div class="row g-4 mb-4">
         <div class="col-lg-4">
           <div class="card card-mindbridge p-4 h-100">
-            <h5>👥 Users by Role</h5>
+            <h2 class="fs-5">👥 Users by Role</h2>
             <div class="chart-box"><canvas ref="roleChartEl" role="img" aria-label="Doughnut chart of users by role"></canvas></div>
           </div>
         </div>
         <div class="col-lg-4">
           <div class="card card-mindbridge p-4 h-100">
-            <h5>⭐ Average Rating per Service</h5>
+            <h2 class="fs-5">⭐ Average Rating per Service</h2>
             <div class="chart-box"><canvas ref="ratingChartEl" role="img" aria-label="Bar chart of average rating per service"></canvas></div>
           </div>
         </div>
         <div class="col-lg-4">
           <div class="card card-mindbridge p-4 h-100">
-            <h5>📈 Appointments per Week</h5>
+            <h2 class="fs-5">📈 Appointments per Week</h2>
             <div class="chart-box"><canvas ref="appointmentChartEl" role="img" aria-label="Line chart of appointments per week"></canvas></div>
           </div>
         </div>
@@ -182,7 +182,7 @@ onBeforeUnmount(() => {
         <div class="col-12">
           <div class="card card-mindbridge p-4">
             <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-2">
-              <h5 class="mb-0">📋 Users</h5>
+              <h2 class="mb-0 fs-5">📋 Users</h2>
               <button type="button" class="btn btn-outline-secondary btn-sm" @click="exportTablePdf('MindBridge Users', userColumns, allUsers, 'mindbridge-users.pdf')">⬇ Export PDF</button>
             </div>
             <DataTable
@@ -216,7 +216,7 @@ onBeforeUnmount(() => {
         <div class="col-12">
           <div class="card card-mindbridge p-4">
             <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-2">
-              <h5 class="mb-0">🗓️ All Appointments</h5>
+              <h2 class="mb-0 fs-5">🗓️ All Appointments</h2>
               <button type="button" class="btn btn-outline-secondary btn-sm" @click="exportTablePdf('MindBridge Appointments', appointmentColumns, appointments, 'mindbridge-appointments.pdf')">⬇ Export PDF</button>
             </div>
             <DataTable
@@ -242,7 +242,7 @@ onBeforeUnmount(() => {
         <div class="col-12">
           <div class="card card-mindbridge p-4">
             <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-2">
-              <h5 class="mb-0">📬 Contact Messages</h5>
+              <h2 class="mb-0 fs-5">📬 Contact Messages</h2>
               <button type="button" class="btn btn-outline-secondary btn-sm" @click="exportTablePdf('MindBridge Contact Messages', contactColumns, contacts, 'mindbridge-contacts.pdf')">⬇ Export PDF</button>
             </div>
             <DataTable

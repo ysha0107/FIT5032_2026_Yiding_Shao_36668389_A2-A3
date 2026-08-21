@@ -62,7 +62,7 @@ const { resources, categories, searchQuery, selectedCategory, filteredResources 
                   <span class="badge bg-soft-primary text-primary">{{ resource.category }}</span>
                   <span v-for="tag in resource.tags.slice(0, 2)" :key="tag" class="badge bg-light text-muted">{{ tag }}</span>
                 </div>
-                <h5 class="card-title">{{ resource.title }}</h5>
+                <h3 class="card-title fs-5">{{ resource.title }}</h3>
                 <p class="card-text text-muted">{{ resource.excerpt }}</p>
                 <div class="d-flex justify-content-between align-items-center mt-3">
                   <small class="text-muted">By {{ resource.author }} · {{ resource.readTime }} read</small>

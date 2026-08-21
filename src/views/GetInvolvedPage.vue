@@ -37,7 +37,7 @@
           </div>
           <div class="col-lg-6">
             <div class="card card-mindbridge p-4">
-              <h5>Where Your Donation Goes</h5>
+              <h3 class="fs-5">Where Your Donation Goes</h3>
               <div class="mt-3">
                 <div class="d-flex justify-content-between mb-2">
                   <span>Direct Support Programs</span><strong>70%</strong>
@@ -81,7 +81,7 @@
           <div class="col-md-4">
             <div class="card card-mindbridge h-100 p-4 text-center">
               <div class="h2 mb-3">🤝</div>
-              <h5>Peer Support Volunteer</h5>
+              <h3 class="fs-5">Peer Support Volunteer</h3>
               <p class="text-muted small">Facilitate support groups and provide one-on-one peer support to individuals on their mental health journey.</p>
               <button class="btn btn-mindbridge-outline btn-sm mt-auto">Apply Now</button>
             </div>
@@ -89,7 +89,7 @@
           <div class="col-md-4">
             <div class="card card-mindbridge h-100 p-4 text-center">
               <div class="h2 mb-3">📚</div>
-              <h5>Content Contributor</h5>
+              <h3 class="fs-5">Content Contributor</h3>
               <p class="text-muted small">Help create and review mental health resources, articles, and educational materials for our community.</p>
               <button class="btn btn-mindbridge-outline btn-sm mt-auto">Apply Now</button>
             </div>
@@ -97,7 +97,7 @@
           <div class="col-md-4">
             <div class="card card-mindbridge h-100 p-4 text-center">
               <div class="h2 mb-3">📣</div>
-              <h5>Community Ambassador</h5>
+              <h3 class="fs-5">Community Ambassador</h3>
               <p class="text-muted small">Raise awareness about mental health in your community and help connect people with our services.</p>
               <button class="btn btn-mindbridge-outline btn-sm mt-auto">Apply Now</button>
             </div>

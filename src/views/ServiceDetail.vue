@@ -55,7 +55,7 @@ function onRated(data) {
 
           <div class="col-lg-4">
             <div class="card card-mindbridge p-4 sticky-sidebar">
-              <h5>Service Details</h5>
+              <h3 class="fs-5">Service Details</h3>
               <hr>
               <div class="mb-3">
                 <strong>💰 Pricing:</strong>

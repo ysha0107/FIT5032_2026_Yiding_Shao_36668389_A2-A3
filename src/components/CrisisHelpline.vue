@@ -3,7 +3,7 @@
 </script>
 
 <template>
-  <div class="crisis-banner">
+  <div class="crisis-banner" role="region" aria-label="Crisis support">
     <div class="container d-flex align-items-center justify-content-center flex-wrap gap-3">
       <span class="crisis-text">
         <strong>In crisis?</strong> You are not alone. Free, confidential support is available 24/7.
@@ -12,7 +12,7 @@
         📞 Call Lifeline: 13 11 14
       </a>
       <span class="crisis-text d-none d-md-inline">or</span>
-      <a href="tel:000" class="btn btn-outline-light btn-sm">
+      <a href="tel:000" class="btn btn-outline-dark btn-sm">
         🚨 Emergency: 000
       </a>
     </div>

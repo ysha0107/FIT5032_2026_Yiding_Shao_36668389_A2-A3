@@ -48,7 +48,7 @@ const recentContacts = computed(() => {
         <!-- Quick Links -->
         <div class="col-lg-4 col-md-6">
           <div class="card card-mindbridge p-4 h-100">
-            <h5>🔗 Quick Links</h5>
+            <h3 class="fs-5">🔗 Quick Links</h3>
             <ul class="list-unstyled mt-3 mb-0">
               <li class="mb-2">
                 <router-link to="/services" class="d-flex align-items-center gap-2">
@@ -82,7 +82,7 @@ const recentContacts = computed(() => {
         <!-- Account Info -->
         <div class="col-lg-4 col-md-6">
           <div class="card card-mindbridge p-4 h-100">
-            <h5>👤 Account Information</h5>
+            <h3 class="fs-5">👤 Account Information</h3>
             <div class="mt-3">
               <div class="mb-2">
                 <strong>Name:</strong> {{ currentUser?.name }}
@@ -103,7 +103,7 @@ const recentContacts = computed(() => {
         <!-- Activity / Stats -->
         <div class="col-lg-4 col-md-12">
           <div class="card card-mindbridge p-4 h-100">
-            <h5>📊 Your Wellness Journey</h5>
+            <h3 class="fs-5">📊 Your Wellness Journey</h3>
             <div class="mt-3">
               <div class="d-flex justify-content-between mb-2">
                 <span>Resources Read</span>
@@ -138,7 +138,7 @@ const recentContacts = computed(() => {
       <div class="row mt-4" v-if="recentContacts.length > 0">
         <div class="col-12">
           <div class="card card-mindbridge p-4">
-            <h5>📬 Recent Contact Submissions</h5>
+            <h3 class="fs-5">📬 Recent Contact Submissions</h3>
             <div class="table-responsive mt-3">
               <table class="table table-hover">
                 <thead>

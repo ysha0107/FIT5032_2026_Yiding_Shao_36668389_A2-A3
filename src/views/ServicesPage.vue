@@ -49,7 +49,7 @@ const filteredServices = computed(() => {
               <div class="card-body d-flex flex-column">
                 <div class="service-icon mb-3">{{ service.icon }}</div>
                 <span class="badge bg-soft-primary text-primary mb-2 align-self-start">{{ service.category }}</span>
-                <h5 class="card-title">{{ service.name }}</h5>
+                <h3 class="card-title fs-5">{{ service.name }}</h3>
                 <p class="card-text text-muted small">{{ service.description }}</p>
 
                 <div class="mt-3 mb-2">

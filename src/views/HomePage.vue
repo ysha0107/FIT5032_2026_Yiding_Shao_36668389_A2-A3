@@ -80,7 +80,7 @@ const featuredServices = services.value.slice(0, 3)
           <div class="col-lg-4 col-md-6" v-for="service in featuredServices" :key="service.id">
             <div class="card card-mindbridge h-100 p-4 text-center">
               <div class="service-icon mb-3">{{ service.icon }}</div>
-              <h5>{{ service.name }}</h5>
+              <h3 class="fs-5">{{ service.name }}</h3>
               <p class="text-muted small">{{ service.description }}</p>
               <div class="mt-auto">
                 <router-link :to="`/services/${service.id}`" class="btn btn-mindbridge-outline btn-sm">
@@ -108,7 +108,7 @@ const featuredServices = services.value.slice(0, 3)
             <div class="card card-mindbridge h-100">
               <div class="card-body">
                 <span class="badge bg-soft-primary text-primary mb-2">{{ resource.category }}</span>
-                <h5 class="card-title">{{ resource.title }}</h5>
+                <h3 class="card-title fs-5">{{ resource.title }}</h3>
                 <p class="card-text text-muted small">{{ resource.excerpt }}</p>
               </div>
               <div class="card-footer bg-white border-0 d-flex justify-content-between align-items-center">

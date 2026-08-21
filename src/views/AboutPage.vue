@@ -92,7 +92,7 @@
           <div class="col-lg-3 col-md-6" v-for="member in 4" :key="member">
             <div class="card card-mindbridge p-4 text-center">
               <div class="team-avatar mb-3">👤</div>
-              <h5>Team Member</h5>
+              <h3 class="fs-5">Team Member</h3>
               <small class="text-muted">Leadership Role</small>
               <p class="small mt-2 text-muted">Committed to advancing mental health support and advocacy in our community.</p>
             </div>

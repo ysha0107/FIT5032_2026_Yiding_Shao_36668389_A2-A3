@@ -128,7 +128,7 @@ async function cancelBooking(id) {
       </div>
 
       <div class="card card-mindbridge p-4">
-        <h5>🗓️ My Bookings</h5>
+        <h2 class="fs-5">🗓️ My Bookings</h2>
         <ul class="list-group list-group-flush">
           <li v-for="b in myBookings" :key="b.id" class="list-group-item d-flex justify-content-between align-items-center flex-wrap gap-2">
             <span>
@@ -150,7 +150,7 @@ async function cancelBooking(id) {
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 id="booking-modal-title" class="modal-title">Confirm Appointment</h5>
+            <h2 id="booking-modal-title" class="modal-title fs-5">Confirm Appointment</h2>
             <button type="button" class="btn-close" aria-label="Close" @click="showModal = false"></button>
           </div>
           <div class="modal-body">

@@ -7,9 +7,9 @@
     <div class="container">
       <div class="row g-4">
         <div class="col-lg-4 col-md-6">
-          <h5 class="footer-heading">
+          <h3 class="footer-heading fs-5">
             <span class="me-2">🧠</span>MindBridge Health Foundation
-          </h5>
+          </h3>
           <p class="footer-text">
             Connecting individuals with accessible, evidence-based mental health resources and support. Together, we build bridges to better mental health.
           </p>

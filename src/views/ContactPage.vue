@@ -211,7 +211,7 @@ async function handleSubmit() {
           <!-- Contact Form -->
           <div class="col-lg-7">
             <div class="card card-mindbridge p-4">
-              <h3 class="mb-4">Send Us a Message</h3>
+              <h2 class="h3 mb-4">Send Us a Message</h2>
 
               <!-- Success Alert -->
               <div v-if="submitSuccess" class="alert alert-success" role="alert">
@@ -340,7 +340,7 @@ async function handleSubmit() {
           <!-- Contact Info Sidebar -->
           <div class="col-lg-5">
             <div class="card card-mindbridge p-4 mb-4">
-              <h5>📞 Crisis Support</h5>
+              <h3 class="fs-5">📞 Crisis Support</h3>
               <p class="text-muted small">If you or someone you know is in immediate danger, please call:</p>
               <div class="d-grid gap-2">
                 <a href="tel:000" class="btn btn-crisis btn-sm">Emergency: 000</a>
@@ -349,7 +349,7 @@ async function handleSubmit() {
             </div>
 
             <div class="card card-mindbridge p-4 mb-4">
-              <h5>📧 General Inquiries</h5>
+              <h3 class="fs-5">📧 General Inquiries</h3>
               <ul class="list-unstyled mb-0 mt-3">
                 <li class="mb-2">📧 info@mindbridge.org.au</li>
                 <li class="mb-2">📞 (03) 9000 1234</li>
@@ -359,7 +359,7 @@ async function handleSubmit() {
             </div>
 
             <div class="card card-mindbridge p-4">
-              <h5>🗺️ Find a Centre Near You</h5>
+              <h3 class="fs-5">🗺️ Find a Centre Near You</h3>
               <p class="text-muted small mt-2">We have locations across Australia. Use our interactive map to find the nearest MindBridge centre.</p>
               <router-link to="/locations" class="btn btn-mindbridge-outline w-100 mt-2">
                 🗺️ Open Interactive Map

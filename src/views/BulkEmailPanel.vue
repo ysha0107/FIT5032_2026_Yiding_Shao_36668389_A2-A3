@@ -62,7 +62,7 @@ async function sendBulk() {
 
 <template>
   <div class="card card-mindbridge p-4 h-100">
-    <h5>📧 Bulk Email <span class="badge bg-soft-primary text-primary ms-1">{{ recipients.length }} selected</span></h5>
+    <h3 class="fs-5">📧 Bulk Email <span class="badge bg-soft-primary text-primary ms-1">{{ recipients.length }} selected</span></h3>
     <p class="text-muted small">
       Select recipients in the Users table above, then compose one message — it is sent to each of them individually.
     </p>

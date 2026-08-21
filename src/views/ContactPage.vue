@@ -1,8 +1,12 @@
 <script setup>
 import { ref, reactive, computed } from 'vue'
+import emailjs from '@emailjs/browser'
 import { useContactsStore } from '../stores/contacts'
 
 const WORKER_URL = import.meta.env.VITE_WORKER_URL
+const EMAILJS_SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID
+const EMAILJS_TEMPLATE_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID
+const EMAILJS_PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY
 
 // Contact form state with validations — BR B.1
 const form = reactive({
@@ -113,29 +117,58 @@ async function handleSubmit() {
 
   const saved = await useContactsStore().submitContact(contactPayload)
 
-  // D.2: send the email with attachment through our Cloudflare Worker
-  // (serverless function → Resend API). Best-effort: the message is stored in
-  // Firestore either way.
-  if (!saved.queued && WORKER_URL) {
-    try {
-      const attachmentPayload = attachment.value
-        ? { filename: attachment.value.name, contentBase64: await fileToBase64(attachment.value) }
-        : null
-      const res = await fetch(`${WORKER_URL}/api/email`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          to: 'yshao0107@student.monash.edu',
-          fromName: contactPayload.name,
-          fromEmail: contactPayload.email,
-          subject: contactPayload.subject,
-          text: `Enquiry type: ${contactPayload.enquiryType}\nFrom: ${contactPayload.name} (${contactPayload.email})\n\n${contactPayload.message}`,
-          attachment: attachmentPayload
+  if (!saved.queued) {
+    // D.2 primary path: email WITH attachment through our Cloudflare Worker
+    // (serverless function → Resend API). Used when RESEND_API_KEY is configured.
+    let emailSent = false
+    if (WORKER_URL) {
+      try {
+        const attachmentPayload = attachment.value
+          ? { filename: attachment.value.name, contentBase64: await fileToBase64(attachment.value) }
+          : null
+        const res = await fetch(`${WORKER_URL}/api/email`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            to: 'yshao0107@student.monash.edu',
+            fromName: contactPayload.name,
+            fromEmail: contactPayload.email,
+            subject: contactPayload.subject,
+            text: `Enquiry type: ${contactPayload.enquiryType}\nFrom: ${contactPayload.name} (${contactPayload.email})\n\n${contactPayload.message}`,
+            attachment: attachmentPayload
+          })
         })
-      })
-      if (!res.ok) console.error('Email worker send failed:', res.status)
-    } catch (e) {
-      console.error('Email worker send failed', e)
+        emailSent = res.ok
+        if (!res.ok) console.error('Email worker send failed:', res.status)
+      } catch (e) {
+        console.error('Email worker send failed', e)
+      }
+    }
+
+    // Fallback: EmailJS without attachment — keeps the contact email working
+    // even when the Resend key is not configured (e.g. demo environment).
+    if (!emailSent && EMAILJS_SERVICE_ID && EMAILJS_TEMPLATE_ID && EMAILJS_PUBLIC_KEY) {
+      try {
+        await emailjs.send(
+          EMAILJS_SERVICE_ID,
+          EMAILJS_TEMPLATE_ID,
+          {
+            name: contactPayload.name,
+            email: contactPayload.email,
+            from_name: contactPayload.name,
+            from_email: contactPayload.email,
+            subject: contactPayload.subject,
+            message: contactPayload.message +
+              (attachment.value
+                ? `\n\nAttachment submitted: ${attachment.value.name} (${Math.round(attachment.value.size / 1024)} KB)`
+                : ''),
+            enquiry_type: contactPayload.enquiryType
+          },
+          { publicKey: EMAILJS_PUBLIC_KEY }
+        )
+      } catch (e) {
+        console.error('EmailJS fallback send failed', e)
+      }
     }
   }
 

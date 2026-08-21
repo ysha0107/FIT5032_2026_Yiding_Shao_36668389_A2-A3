@@ -20,17 +20,18 @@ const { currentUser, isLoggedIn } = useAuthStore()
 const { getRating, getUserRating, addOrUpdateRating } = useRatingsStore()
 
 const hoverRating = ref(0)
+const queuedMessage = ref('')
 
 const ratingData = computed(() => getRating(props.itemId))
-const userRating = computed(() => {
-  if (!currentUser.value) return null
-  return getUserRating(props.itemId, currentUser.value.id)
-})
+const userRating = computed(() => getUserRating(props.itemId))
 
-function rate(score) {
+async function rate(score) {
   if (!isLoggedIn.value || props.readOnly) return
-  if (!currentUser.value) return
-  addOrUpdateRating(props.itemId, currentUser.value.id, score)
+  queuedMessage.value = ''
+  const result = await addOrUpdateRating(props.itemId, score)
+  if (result.queued) {
+    queuedMessage.value = 'Saved offline — will sync when you reconnect.'
+  }
   emit('rated', { score, itemId: props.itemId })
 }
 
@@ -62,13 +63,14 @@ function starClass(index) {
         ★
       </button>
     </div>
-    <span class="rating-text ms-2" v-if="ratingData.count > 0">
+    <span v-if="ratingData.count > 0" class="rating-text ms-2">
       {{ ratingData.average }} / 5
       <small class="text-muted">({{ ratingData.count }} rating{{ ratingData.count !== 1 ? 's' : '' }})</small>
     </span>
-    <span class="rating-text ms-2 text-muted" v-else>
+    <span v-else class="rating-text ms-2 text-muted">
       No ratings yet
     </span>
+    <span v-if="queuedMessage" class="text-muted small ms-2" role="status">{{ queuedMessage }}</span>
     <div v-if="!isLoggedIn && !readOnly" class="mt-1">
       <small class="text-muted">
         <router-link to="/login">Login</router-link> to rate

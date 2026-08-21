@@ -151,6 +151,18 @@ a:hover {
   background: linear-gradient(135deg, #e8f4f8 0%, #d4efe4 50%, #fdf6e8 100%);
 }
 
+/* DataTable (D.3) */
+.data-table-sort {
+  background: none;
+  border: none;
+  padding: 0;
+  font-weight: 600;
+  color: var(--mindbridge-heading);
+  text-align: left;
+}
+.data-table-sort:hover { color: var(--mindbridge-primary); }
+.data-table th .form-control-sm { min-width: 110px; font-weight: 400; }
+
 /* Validation error styles */
 .input-error {
   border-color: var(--mindbridge-danger) !important;

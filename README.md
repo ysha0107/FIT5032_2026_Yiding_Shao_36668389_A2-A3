@@ -6,6 +6,7 @@
 
 **Live app (D.4):** https://mindbridge-1kk.pages.dev
 **Serverless API (E.1):** https://mindbridge-api.ysha0107.workers.dev
+**Status (23 Aug 2026):** all BR D–F implemented and deployed; WCAG verified via accessibilitychecker.org (0 critical issues); 12/12 unit tests passing.
 
 ---
 
